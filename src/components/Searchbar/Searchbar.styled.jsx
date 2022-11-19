@@ -59,3 +59,19 @@ export const SearchBtnLabel = styled.span`
   clip-path: inset(50%);
   border: 0;
 `;
+
+export const SearchInput = styled.input`
+  display: inline-block;
+  width: 100%;
+  font: inherit;
+  font-size: 20px;
+  border: none;
+  outline: none;
+  padding-left: 4px;
+  padding-right: 4px;
+
+  &::placeholder {
+    font: inherit;
+    font-size: 18px;
+  }
+`;
