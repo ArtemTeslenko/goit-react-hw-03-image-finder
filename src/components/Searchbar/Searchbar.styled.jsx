@@ -34,7 +34,6 @@ export const SearchBtn = styled.button`
   width: 48px;
   height: 48px;
   border: 0;
-  background-image: url('https://cdn-icons-png.flaticon.com/512/3917/3917754.png');
   background-size: 40%;
   background-repeat: no-repeat;
   background-position: center;
