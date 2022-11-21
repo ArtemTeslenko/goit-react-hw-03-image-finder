@@ -1,19 +1,13 @@
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import React, { Component } from 'react';
 import Searchbar from './Searchbar';
+import Gallery from './ImageGallery';
 
 class App extends Component {
   state = {
     query: '',
-    requestResult: null,
   };
-
-  componentDidMount() {
-    fetch(
-      'https://pixabay.com/api/?key=30103302-a3ef06cdfdc78e2e196d775c9&q=cat&image_type=photo&orientation=horizontal&safesearch=true&page=1&per_page=12'
-    )
-      .then(result => result.json())
-      .then(data => this.setState({ requestResult: data }));
-  }
 
   setQuery = query => {
     this.setState({ query: query });
@@ -23,13 +17,12 @@ class App extends Component {
     return (
       <div className="App">
         <Searchbar onSubmit={this.setQuery}></Searchbar>
-        <div>
-          {this.state.requestResult && (
-            <div>
-              <p>{this.state.requestResult.hits[0].pageURL}</p>
-            </div>
-          )}
-        </div>
+        <Gallery query={this.state.query}></Gallery>
+        <ToastContainer
+          autoClose={2000}
+          hideProgressBar={true}
+          theme={'colored'}
+        />
       </div>
     );
   }

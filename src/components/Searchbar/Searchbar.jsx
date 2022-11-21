@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { BiSearch } from 'react-icons/bi';
+import { toast } from 'react-toastify';
 import React, { Component } from 'react';
 import {
   Form,
@@ -16,7 +17,15 @@ export default class Searchbar extends Component {
 
   onFormSubmit = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state.query);
+
+    const { query } = this.state;
+
+    if (query.trim() === '') {
+      toast.error('Please fill the search form');
+      return;
+    }
+
+    this.props.onSubmit(query);
     this.setState({ query: '' });
   };
 
@@ -29,7 +38,7 @@ export default class Searchbar extends Component {
       <Header>
         <Form onSubmit={this.onFormSubmit}>
           <SearchBtn type="submit">
-            <BiSearch style={{ width: 30, height: 30 }} />
+            <BiSearch style={{ width: 25, height: 25 }} />
             <SearchBtnLabel>Search</SearchBtnLabel>
           </SearchBtn>
           <SearchInput
