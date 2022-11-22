@@ -8,7 +8,7 @@ class Gallery extends Component {
     status: 'idle',
     images: [],
     error: null,
-    page: 1,
+    page: 0,
   };
 
   KEY = '30103302-a3ef06cdfdc78e2e196d775c9';
@@ -23,16 +23,17 @@ class Gallery extends Component {
     const { query } = this.props;
     const { page } = this.state;
 
-    if (prevProps.query !== query || prevState.page !== page) {
+    if (prevProps.query !== query) {
+      this.setState({
+        images: [],
+        page: 1,
+      });
+    }
+
+    if (prevState.page !== page) {
       this.setState({
         status: 'pending',
       });
-
-      if (prevProps.query !== query) {
-        this.setState({
-          images: [],
-        });
-      }
 
       fetch(
         `https://pixabay.com/api/?key=${this.KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=12`
@@ -74,13 +75,14 @@ class Gallery extends Component {
       return (
         <>
           <ImageGallery>
-            {[...images].map(({ webformatURL, tags, id }) => {
+            {[...images].map(({ id, tags, webformatURL, largeImageURL }) => {
               return (
                 <GalleryItem
                   key={id}
-                  src={webformatURL}
                   alternative={tags}
-                  onImg={this.props.onImg}
+                  src={webformatURL}
+                  largSrc={largeImageURL}
+                  onImgClick={this.props.onImgClick}
                 />
               );
             })}

@@ -15,10 +15,9 @@ class App extends Component {
     this.setState({ query: query });
   };
 
-  onImgClick = () => {
-    console.log('imgClick');
-    this.setState(previous => ({
-      showModal: !previous.showModal,
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
     }));
   };
 
@@ -26,9 +25,12 @@ class App extends Component {
     return (
       <div className="App">
         <Searchbar onSubmit={this.setQuery}></Searchbar>
-        <Gallery query={this.state.query} onImg={this.onImgClick}></Gallery>
+        <Gallery
+          query={this.state.query}
+          onImgClick={this.toggleModal}
+        ></Gallery>
         {this.state.showModal && (
-          <ShowModal>
+          <ShowModal onClose={this.toggleModal}>
             <img
               src="https://cdn.pixabay.com/user/2016/09/18/22-38-35-578_250x250.jpg"
               alt="img"
