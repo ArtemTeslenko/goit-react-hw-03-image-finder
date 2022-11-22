@@ -1,26 +1,39 @@
 import React, { Component } from 'react';
 import { ImageGallery } from './ImageGallery.styled';
 import GalleryItem from '../ImageGalleryItem';
+import LoadMore from '../Button';
 
 class Gallery extends Component {
   state = {
+    status: 'idle',
     images: [],
     error: null,
-    status: 'idle',
     page: 1,
   };
 
   KEY = '30103302-a3ef06cdfdc78e2e196d775c9';
 
+  onLoadMoreClick = () => {
+    this.setState(previous => ({
+      page: (previous.page += 1),
+    }));
+  };
+
   componentDidUpdate(prevProps, prevState) {
     const { query } = this.props;
     const { page } = this.state;
 
-    if (prevProps.query !== query) {
+    if (prevProps.query !== query || prevState.page !== page) {
       this.setState({
-        images: [],
         status: 'pending',
       });
+
+      if (prevProps.query !== query) {
+        this.setState({
+          images: [],
+        });
+      }
+
       fetch(
         `https://pixabay.com/api/?key=${this.KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=12`
       )
@@ -36,7 +49,6 @@ class Gallery extends Component {
           this.setState(previous => ({
             images: [...previous.images, ...data.hits],
             status: 'resolved',
-            page: (previous.page += 1),
           }))
         )
         .catch(error => this.setState({ error, status: 'rejected' }));
@@ -60,13 +72,21 @@ class Gallery extends Component {
 
     if (status === 'resolved') {
       return (
-        <ImageGallery>
-          {[...images].map(({ webformatURL, tags, id }) => {
-            return (
-              <GalleryItem key={id} src={webformatURL} alternative={tags} />
-            );
-          })}
-        </ImageGallery>
+        <>
+          <ImageGallery>
+            {[...images].map(({ webformatURL, tags, id }) => {
+              return (
+                <GalleryItem
+                  key={id}
+                  src={webformatURL}
+                  alternative={tags}
+                  onImg={this.props.onImg}
+                />
+              );
+            })}
+          </ImageGallery>
+          <LoadMore onLoadMoreClick={this.onLoadMoreClick}>Load more</LoadMore>
+        </>
       );
     }
   }
