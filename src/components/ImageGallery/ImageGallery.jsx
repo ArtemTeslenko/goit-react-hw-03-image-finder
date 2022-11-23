@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { ImageGallery } from './ImageGallery.styled';
 import GalleryItem from '../ImageGalleryItem';
 import LoadMore from '../Button';
 
-class Gallery extends Component {
+class Gallery extends PureComponent {
   state = {
     status: 'idle',
     images: [],
@@ -12,12 +12,6 @@ class Gallery extends Component {
   };
 
   KEY = '30103302-a3ef06cdfdc78e2e196d775c9';
-
-  onLoadMoreClick = () => {
-    this.setState(previous => ({
-      page: (previous.page += 1),
-    }));
-  };
 
   componentDidUpdate(prevProps, prevState) {
     const { query } = this.props;
@@ -54,7 +48,14 @@ class Gallery extends Component {
         )
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
+    this.state.status === 'resolved' && autoscroll();
   }
+
+  onLoadMoreClick = () => {
+    this.setState(previous => ({
+      page: (previous.page += 1),
+    }));
+  };
 
   render() {
     const { images, error, status } = this.state;
@@ -74,19 +75,22 @@ class Gallery extends Component {
     if (status === 'resolved') {
       return (
         <>
-          <ImageGallery>
-            {[...images].map(({ id, tags, webformatURL, largeImageURL }) => {
-              return (
-                <GalleryItem
-                  key={id}
-                  alternative={tags}
-                  src={webformatURL}
-                  largSrc={largeImageURL}
-                  onImgClick={this.props.onImgClick}
-                />
-              );
-            })}
-          </ImageGallery>
+          <div className="gallery">
+            <ImageGallery>
+              {[...images].map(({ id, tags, webformatURL, largeImageURL }) => {
+                return (
+                  <GalleryItem
+                    key={id}
+                    alternative={tags}
+                    src={webformatURL}
+                    largSrc={largeImageURL}
+                    onImgClick={this.props.onImgClick}
+                    shareSrc={this.props.shareSrc}
+                  />
+                );
+              })}
+            </ImageGallery>
+          </div>
           <LoadMore onLoadMoreClick={this.onLoadMoreClick}>Load more</LoadMore>
         </>
       );
@@ -95,3 +99,14 @@ class Gallery extends Component {
 }
 
 export default Gallery;
+
+function autoscroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}

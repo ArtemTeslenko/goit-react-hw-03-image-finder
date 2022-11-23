@@ -9,6 +9,7 @@ class App extends Component {
   state = {
     query: '',
     showModal: false,
+    largeImgData: { src: '', alt: '' },
   };
 
   setQuery = query => {
@@ -21,20 +22,23 @@ class App extends Component {
     }));
   };
 
+  shareSrc = (src, alt) => {
+    this.setState({ largeImgData: { src, alt } });
+  };
+
   render() {
+    const { largeImgData, showModal, query } = this.state;
     return (
       <div className="App">
         <Searchbar onSubmit={this.setQuery}></Searchbar>
         <Gallery
-          query={this.state.query}
+          query={query}
           onImgClick={this.toggleModal}
+          shareSrc={this.shareSrc}
         ></Gallery>
-        {this.state.showModal && (
+        {showModal && (
           <ShowModal onClose={this.toggleModal}>
-            <img
-              src="https://cdn.pixabay.com/user/2016/09/18/22-38-35-578_250x250.jpg"
-              alt="img"
-            />
+            <img src={largeImgData.src} alt={largeImgData.alt} />
           </ShowModal>
         )}
         <ToastContainer
