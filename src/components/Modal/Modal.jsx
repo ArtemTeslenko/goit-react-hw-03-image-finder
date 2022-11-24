@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Overlay, Paper } from './Modal.styled';
 import { createPortal } from 'react-dom';
@@ -36,3 +37,7 @@ class ShowModal extends Component {
 }
 
 export default ShowModal;
+
+ShowModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};

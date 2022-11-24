@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { BtnWrapper, Button } from './Button.styled';
 
@@ -10,3 +11,7 @@ export default function LoadMore({ onLoadMoreClick, children }) {
     </BtnWrapper>
   );
 }
+
+LoadMore.propTypes = {
+  onLoadMoreClick: PropTypes.func.isRequired,
+};

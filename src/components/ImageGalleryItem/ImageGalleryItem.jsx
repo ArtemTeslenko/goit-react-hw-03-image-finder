@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { GalleryListItem, GalleryImg } from './ImageGalleryItem.styled';
 
@@ -21,3 +22,11 @@ export default function GalleryItem({
     </GalleryListItem>
   );
 }
+
+GalleryItem.propTypes = {
+  alternative: PropTypes.string.isRequired,
+  largSrc: PropTypes.string.isRequired,
+  src: PropTypes.string.isRequired,
+  onImgClick: PropTypes.func.isRequired,
+  shareSrc: PropTypes.func.isRequired,
+};

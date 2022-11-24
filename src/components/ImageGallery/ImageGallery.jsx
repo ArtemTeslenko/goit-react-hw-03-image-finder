@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { ThreeDots } from 'react-loader-spinner';
 import React, { PureComponent } from 'react';
 import { ImageGallery } from './ImageGallery.styled';
@@ -62,7 +63,6 @@ class Gallery extends PureComponent {
 
   render() {
     const { images, isLoading, error } = this.state;
-
     return (
       <>
         {error && <p>{error}</p>}
@@ -102,3 +102,9 @@ class Gallery extends PureComponent {
 }
 
 export default Gallery;
+
+Gallery.propTypes = {
+  shareSrc: PropTypes.func.isRequired,
+  onImgClick: PropTypes.func.isRequired,
+  query: PropTypes.string.isRequired,
+};
