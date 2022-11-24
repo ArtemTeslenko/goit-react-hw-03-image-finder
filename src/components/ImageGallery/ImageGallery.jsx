@@ -1,14 +1,17 @@
+import { ThreeDots } from 'react-loader-spinner';
 import React, { PureComponent } from 'react';
 import { ImageGallery } from './ImageGallery.styled';
+import { Urging, Loader } from './Helpers.styled';
 import GalleryItem from '../ImageGalleryItem';
 import LoadMore from '../Button';
+import autoscroll from '../Utils';
 
 class Gallery extends PureComponent {
   state = {
-    status: 'idle',
     images: [],
     error: null,
     page: 0,
+    isLoading: false,
   };
 
   KEY = '30103302-a3ef06cdfdc78e2e196d775c9';
@@ -26,7 +29,7 @@ class Gallery extends PureComponent {
 
     if (prevState.page !== page) {
       this.setState({
-        status: 'pending',
+        isLoading: true,
       });
 
       fetch(
@@ -43,12 +46,12 @@ class Gallery extends PureComponent {
         .then(data =>
           this.setState(previous => ({
             images: [...previous.images, ...data.hits],
-            status: 'resolved',
+            isLoading: false,
           }))
         )
-        .catch(error => this.setState({ error, status: 'rejected' }));
+        .catch(error => this.setState({ error }));
     }
-    this.state.status === 'resolved' && autoscroll();
+    autoscroll();
   }
 
   onLoadMoreClick = () => {
@@ -58,55 +61,44 @@ class Gallery extends PureComponent {
   };
 
   render() {
-    const { images, error, status } = this.state;
+    const { images, isLoading, error } = this.state;
 
-    if (status === 'idle') {
-      return <p>Start searching.</p>;
-    }
-
-    if (status === 'pending') {
-      return <p>Loading...</p>;
-    }
-
-    if (status === 'rejected') {
-      return <p>{error.message}</p>;
-    }
-
-    if (status === 'resolved') {
-      return (
-        <>
+    return (
+      <>
+        {error && <p>{error}</p>}
+        {images.length < 1 && !isLoading ? (
+          <Urging>Start searching.</Urging>
+        ) : null}
+        {images && (
           <div className="gallery">
             <ImageGallery>
-              {[...images].map(({ id, tags, webformatURL, largeImageURL }) => {
-                return (
-                  <GalleryItem
-                    key={id}
-                    alternative={tags}
-                    src={webformatURL}
-                    largSrc={largeImageURL}
-                    onImgClick={this.props.onImgClick}
-                    shareSrc={this.props.shareSrc}
-                  />
-                );
-              })}
+              {images &&
+                images.map(({ id, tags, webformatURL, largeImageURL }) => {
+                  return (
+                    <GalleryItem
+                      key={id}
+                      alternative={tags}
+                      src={webformatURL}
+                      largSrc={largeImageURL}
+                      onImgClick={this.props.onImgClick}
+                      shareSrc={this.props.shareSrc}
+                    />
+                  );
+                })}
             </ImageGallery>
           </div>
+        )}
+        {!isLoading && images.length > 0 ? (
           <LoadMore onLoadMoreClick={this.onLoadMoreClick}>Load more</LoadMore>
-        </>
-      );
-    }
+        ) : null}
+        {isLoading && (
+          <Loader>
+            <ThreeDots color="#3f51b5" ariaLabel="three-dots-loading" />
+          </Loader>
+        )}
+      </>
+    );
   }
 }
 
 export default Gallery;
-
-function autoscroll() {
-  const { height: cardHeight } = document
-    .querySelector('.gallery')
-    .firstElementChild.getBoundingClientRect();
-
-  window.scrollBy({
-    top: cardHeight * 2,
-    behavior: 'smooth',
-  });
-}
