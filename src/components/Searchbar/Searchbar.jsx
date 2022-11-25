@@ -49,7 +49,7 @@ export default class Searchbar extends Component {
             autocomplete="off"
             autoFocus
             placeholder="Search images and photos"
-          ></SearchInput>
+          />
         </Form>
       </Header>
     );

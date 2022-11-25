@@ -37,14 +37,14 @@ class App extends Component {
     const { largeImgData, showModal, query, page } = this.state;
     return (
       <div className="App">
-        <Searchbar onSubmit={this.setQuery}></Searchbar>
+        <Searchbar onSubmit={this.setQuery} />
         <Gallery
           query={query}
           page={page}
           onImgClick={this.toggleModal}
           shareSrc={this.shareSrc}
           loadMore={this.loadMore}
-        ></Gallery>
+        />
         {showModal && (
           <ShowModal onClose={this.toggleModal}>
             <img src={largeImgData.src} alt={largeImgData.alt} />
