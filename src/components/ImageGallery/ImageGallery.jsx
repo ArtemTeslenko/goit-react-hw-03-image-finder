@@ -1,40 +1,39 @@
 import PropTypes from 'prop-types';
 import { ThreeDots } from 'react-loader-spinner';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { ImageGallery } from './ImageGallery.styled';
 import { Urging, Loader } from './Helpers.styled';
 import GalleryItem from '../ImageGalleryItem';
 import LoadMore from '../Button';
 import autoscroll from '../Utils';
 
-class Gallery extends PureComponent {
+class Gallery extends Component {
   state = {
     images: [],
     error: null,
-    page: 0,
     isLoading: false,
+    totalHits: 0,
   };
 
+  COMMON_URL = 'https://pixabay.com/api/';
   KEY = '30103302-a3ef06cdfdc78e2e196d775c9';
 
-  componentDidUpdate(prevProps, prevState) {
-    const { query } = this.props;
-    const { page } = this.state;
+  componentDidUpdate(prevProps, _) {
+    const { query, page } = this.props;
 
     if (prevProps.query !== query) {
       this.setState({
         images: [],
-        page: 1,
       });
     }
 
-    if (prevState.page !== page) {
+    if (prevProps.page !== page || prevProps.query !== query) {
       this.setState({
         isLoading: true,
       });
 
       fetch(
-        `https://pixabay.com/api/?key=${this.KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=12`
+        `${this.COMMON_URL}?key=${this.KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=12`
       )
         .then(response => {
           if (response.ok) {
@@ -48,6 +47,7 @@ class Gallery extends PureComponent {
           this.setState(previous => ({
             images: [...previous.images, ...data.hits],
             isLoading: false,
+            totalHits: data.totalHits,
           }))
         )
         .catch(error => this.setState({ error }));
@@ -56,13 +56,12 @@ class Gallery extends PureComponent {
   }
 
   onLoadMoreClick = () => {
-    this.setState(previous => ({
-      page: (previous.page += 1),
-    }));
+    this.props.loadMore();
   };
 
   render() {
-    const { images, isLoading, error } = this.state;
+    const { images, isLoading, error, totalHits } = this.state;
+    const { onImgClick, shareSrc } = this.props;
     return (
       <>
         {error && <p>{error}</p>}
@@ -80,15 +79,15 @@ class Gallery extends PureComponent {
                       alternative={tags}
                       src={webformatURL}
                       largSrc={largeImageURL}
-                      onImgClick={this.props.onImgClick}
-                      shareSrc={this.props.shareSrc}
+                      onImgClick={onImgClick}
+                      shareSrc={shareSrc}
                     />
                   );
                 })}
             </ImageGallery>
           </div>
         )}
-        {!isLoading && images.length > 0 ? (
+        {!isLoading && images.length > 0 && images.length < totalHits ? (
           <LoadMore onLoadMoreClick={this.onLoadMoreClick}>Load more</LoadMore>
         ) : null}
         {isLoading && (
@@ -107,4 +106,5 @@ Gallery.propTypes = {
   shareSrc: PropTypes.func.isRequired,
   onImgClick: PropTypes.func.isRequired,
   query: PropTypes.string.isRequired,
+  loadMore: PropTypes.func.isRequired,
 };

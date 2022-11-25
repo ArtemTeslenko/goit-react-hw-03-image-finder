@@ -15,7 +15,7 @@ export default function GalleryItem({
         src={src}
         alt={alternative}
         onClick={() => {
-          onImgClick(largSrc);
+          onImgClick();
           shareSrc(largSrc, alternative);
         }}
       />

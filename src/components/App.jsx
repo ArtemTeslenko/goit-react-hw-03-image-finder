@@ -8,12 +8,13 @@ import ShowModal from './Modal';
 class App extends Component {
   state = {
     query: '',
+    page: 1,
     showModal: false,
     largeImgData: { src: '', alt: '' },
   };
 
   setQuery = query => {
-    this.setState({ query: query });
+    this.setState({ query: query, page: 1 });
   };
 
   toggleModal = () => {
@@ -26,15 +27,23 @@ class App extends Component {
     this.setState({ largeImgData: { src, alt } });
   };
 
+  loadMore = () => {
+    this.setState(prev => ({
+      page: (prev.page += 1),
+    }));
+  };
+
   render() {
-    const { largeImgData, showModal, query } = this.state;
+    const { largeImgData, showModal, query, page } = this.state;
     return (
       <div className="App">
         <Searchbar onSubmit={this.setQuery}></Searchbar>
         <Gallery
           query={query}
+          page={page}
           onImgClick={this.toggleModal}
           shareSrc={this.shareSrc}
+          loadMore={this.loadMore}
         ></Gallery>
         {showModal && (
           <ShowModal onClose={this.toggleModal}>
